@@ -1,20 +1,22 @@
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Button } from 'react-native-paper';
+import { Text, Card, Button, TextInput } from 'react-native-paper';
 import { useColorScheme } from 'react-native';
-import { Plus, TrendingUp, TrendingDown } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
-import { TextInput } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import React, { createContext, useState, useContext } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Tabs } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import {
+  Plus,
+  TrendingUp,
+  TrendingDown,
   Chrome as Home,
   WalletCards,
   ChartBar as BarChart3,
   Settings,
 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Tabs } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import { api } from '../config/api';
 
 export type Loan = {
   id: any;
@@ -55,10 +57,42 @@ export const useLoanContext = () => {
   return context;
 };
 
+type Summary = {
+  totalGiven: number;
+  totalTaken: number;
+  monthlyEarnings: number;
+  monthlyLoss: number;
+};
+
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+
+  const [summary, setSummary] = useState<Summary>({
+    totalGiven: 0,
+    totalTaken: 0,
+    monthlyEarnings: 0,
+    monthlyLoss: 0,
+  });
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const response = await api.loans.summary.get();
+        if (response.ok) {
+          const data = await response.json();
+          setSummary(data);
+        } else {
+          console.error('Failed to fetch summary:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error fetching summary:', error);
+      }
+    };
+
+    fetchSummary();
+  }, []);
 
   return (
     <LinearGradient
@@ -85,12 +119,12 @@ export default function HomeScreen() {
             <Card.Content>
               <Text variant="titleMedium">Total Given</Text>
               <Text variant="headlineMedium" style={styles.amount}>
-                ₹50,000
+                ₹{summary.totalGiven.toLocaleString()}
               </Text>
               <View style={styles.trend}>
                 <TrendingUp size={20} color="#10b981" />
                 <Text style={[styles.trendText, { color: '#10b981' }]}>
-                  +₹5,000 this month
+                  +₹{summary.monthlyEarnings.toLocaleString()} this month
                 </Text>
               </View>
             </Card.Content>
@@ -105,12 +139,12 @@ export default function HomeScreen() {
             <Card.Content>
               <Text variant="titleMedium">Total Taken</Text>
               <Text variant="headlineMedium" style={styles.amount}>
-                ₹20,000
+                ₹{summary.totalTaken.toLocaleString()}
               </Text>
               <View style={styles.trend}>
                 <TrendingDown size={20} color="#ef4444" />
                 <Text style={[styles.trendText, { color: '#ef4444' }]}>
-                  -₹2,000 this month
+                  -₹{summary.monthlyLoss.toLocaleString()} this month
                 </Text>
               </View>
             </Card.Content>
@@ -135,30 +169,7 @@ export default function HomeScreen() {
           >
             Recent Activity
           </Text>
-          <Card
-            style={[
-              styles.activityCard,
-              { backgroundColor: isDark ? '#1c1c1c' : '#ffffff' },
-            ]}
-          >
-            <Card.Content>
-              <Text variant="titleMedium">Loan to John Doe</Text>
-              <Text variant="bodyMedium">₹10,000 @ 12% interest</Text>
-              <Text variant="bodySmall">Due on: Feb 28, 2024</Text>
-            </Card.Content>
-          </Card>
-          <Card
-            style={[
-              styles.activityCard,
-              { backgroundColor: isDark ? '#1c1c1c' : '#ffffff' },
-            ]}
-          >
-            <Card.Content>
-              <Text variant="titleMedium">Repayment from Jane Smith</Text>
-              <Text variant="bodyMedium">₹5,000 received</Text>
-              <Text variant="bodySmall">Paid on: Feb 15, 2024</Text>
-            </Card.Content>
-          </Card>
+          {/* Render recent activity here */}
         </View>
       </ScrollView>
       <Tabs
@@ -344,11 +355,6 @@ const styles = StyleSheet.create({
   },
   recentActivity: {
     padding: 20,
-  },
-  activityCard: {
-    marginBottom: 10,
-    borderRadius: 10,
-    elevation: 3,
   },
   input: {
     marginBottom: 15,
