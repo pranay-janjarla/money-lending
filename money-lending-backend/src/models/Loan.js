@@ -26,6 +26,12 @@ const LoanSchema = new mongoose.Schema({
     type: String,
     default: 'active',
   },
+
+  borrower: {
+    type: String,
+    required: true,
+    enum: ['me', 'other'],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

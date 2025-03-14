@@ -91,6 +91,13 @@ export default function LoansScreen() {
                   </Chip>
                 </View>
 
+                {/* New row to show borrower info */}
+                <View style={styles.borrowerRow}>
+                  <Text variant="bodySmall">
+                    Borrower: {loan.borrower === 'me' ? 'Me' : 'Other'}
+                  </Text>
+                </View>
+
                 <View style={styles.loanDetails}>
                   <View style={styles.detailRow}>
                     <IconWrapper>
@@ -181,6 +188,9 @@ const styles = StyleSheet.create({
   },
   typeChip: {
     height: 24,
+  },
+  borrowerRow: {
+    marginBottom: 8,
   },
   loanDetails: {
     marginVertical: 10,

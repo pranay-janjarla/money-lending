@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, TextInput, Button } from 'react-native-paper';
+import { Text, TextInput, Button, Menu } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { useLoanContext, LoanProvider } from '../loanContext';
+import { useLoanContext } from '../loanContext';
 import { api } from '../config/api';
 
 export default function NewLoanScreen() {
-  const [borrower, setBorrower] = useState('');
+  const [borrowerType, setBorrowerType] = useState('');
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [borrowerName, setBorrowerName] = useState('');
   const [amount, setAmount] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -14,13 +16,22 @@ export default function NewLoanScreen() {
   const { addLoan } = useLoanContext();
 
   const handleAddLoan = async () => {
+    if (!borrowerType || (borrowerType !== 'me' && borrowerType !== 'other')) {
+      console.error("Please select a valid borrower type: 'me' or 'other'");
+      return;
+    }
+    if (!borrowerName.trim()) {
+      console.error('Please enter the borrower name');
+      return;
+    }
     const loanData = {
       type: 'given',
-      name: borrower,
+      name: borrowerName,
       amount: Number(amount),
       interest: Number(interestRate),
       dueDate: dueDate,
       status: 'active',
+      borrower: borrowerType,
     };
 
     try {
@@ -38,42 +49,70 @@ export default function NewLoanScreen() {
   };
 
   return (
-    <LoanProvider>
-      <View style={styles.container}>
-        <Text variant="headlineMedium" style={styles.header}>
-          Add New Loan
-        </Text>
-        <TextInput
-          label="Borrower"
-          value={borrower}
-          onChangeText={setBorrower}
-          style={styles.input}
+    <View style={styles.container}>
+      <Text variant="headlineMedium" style={styles.header}>
+        Add New Loan
+      </Text>
+
+      <Menu
+        visible={menuVisible}
+        onDismiss={() => setMenuVisible(false)}
+        anchor={
+          <Button
+            mode="outlined"
+            onPress={() => setMenuVisible(true)}
+            style={styles.input}
+          >
+            {borrowerType ? borrowerType : 'Select Borrower Type'}
+          </Button>
+        }
+      >
+        <Menu.Item
+          onPress={() => {
+            setBorrowerType('me');
+            setMenuVisible(false);
+          }}
+          title="me"
         />
-        <TextInput
-          label="Amount"
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          style={styles.input}
+        <Menu.Item
+          onPress={() => {
+            setBorrowerType('other');
+            setMenuVisible(false);
+          }}
+          title="other"
         />
-        <TextInput
-          label="Interest Rate (%)"
-          value={interestRate}
-          onChangeText={setInterestRate}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          label="Due Date (YYYY-MM-DD)"
-          value={dueDate}
-          onChangeText={setDueDate}
-          style={styles.input}
-        />
-        <Button mode="contained" onPress={handleAddLoan} style={styles.button}>
-          Add Loan
-        </Button>
-      </View>
-    </LoanProvider>
+      </Menu>
+
+      <TextInput
+        label="Borrower Name"
+        value={borrowerName}
+        onChangeText={setBorrowerName}
+        style={styles.input}
+      />
+      <TextInput
+        label="Amount"
+        value={amount}
+        onChangeText={setAmount}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+      <TextInput
+        label="Interest Rate (%)"
+        value={interestRate}
+        onChangeText={setInterestRate}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+      <TextInput
+        label="Due Date (YYYY-MM-DD)"
+        value={dueDate}
+        onChangeText={setDueDate}
+        style={styles.input}
+      />
+      <Button mode="contained" onPress={handleAddLoan} style={styles.button}>
+        Add Loan
+      </Button>
+    </View>
   );
 }
 

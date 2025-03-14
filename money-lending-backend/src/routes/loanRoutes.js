@@ -23,6 +23,7 @@ router.post('/', async (req, res) => {
     interest: req.body.interest,
     dueDate: req.body.dueDate,
     status: req.body.status || 'active',
+    borrower: req.body.borrower,
   });
 
   try {

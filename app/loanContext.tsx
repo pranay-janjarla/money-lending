@@ -14,6 +14,7 @@ export type Loan = {
   interest: number;
   dueDate: string;
   status: string;
+  borrower: string;
 };
 
 type LoanContextType = {
