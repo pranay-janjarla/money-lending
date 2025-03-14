@@ -1,9 +1,9 @@
-export const API_BASE_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5000/api';
 
 export const api = {
   loans: {
-    getAll: () => fetch(`${API_BASE_URL}/loans`),
-    create: (data: any) => fetch(`${API_BASE_URL}/loans`, {
+    getAll: () => fetch(`${API_URL}/loans`),
+    create: (data: any) => fetch(`${API_URL}/loans`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -11,4 +11,13 @@ export const api = {
       body: JSON.stringify(data),
     }),
   },
+};
+
+export type LoanData = {
+  name: string;
+  amount: number;
+  interest: number;
+  dueDate: string;
+  type: 'given' | 'taken';
+  status?: string;
 };

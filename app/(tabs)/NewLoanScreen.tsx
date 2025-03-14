@@ -1,9 +1,8 @@
-// filepath: c:\Users\prana\Downloads\Loan_legend\app\(tabs)\NewLoanScreen.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { useLoanContext } from '../context/loanContext';
+import { useLoanContext, LoanProvider } from '../loanContext';
 import { api } from '../config/api';
 
 export default function NewLoanScreen() {
@@ -28,7 +27,7 @@ export default function NewLoanScreen() {
       const response = await api.loans.create(loanData);
       if (response.ok) {
         const savedLoan = await response.json();
-        addLoan(savedLoan); // The context will now receive the exact data from backend
+        addLoan(savedLoan);
         navigation.goBack();
       } else {
         console.error('Failed to create loan:', await response.text());
@@ -39,40 +38,42 @@ export default function NewLoanScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium" style={styles.header}>
-        Add New Loan
-      </Text>
-      <TextInput
-        label="Borrower"
-        value={borrower}
-        onChangeText={setBorrower}
-        style={styles.input}
-      />
-      <TextInput
-        label="Amount"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <TextInput
-        label="Interest Rate (%)"
-        value={interestRate}
-        onChangeText={setInterestRate}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <TextInput
-        label="Due Date (YYYY-MM-DD)"
-        value={dueDate}
-        onChangeText={setDueDate}
-        style={styles.input}
-      />
-      <Button mode="contained" onPress={handleAddLoan} style={styles.button}>
-        Add Loan
-      </Button>
-    </View>
+    <LoanProvider>
+      <View style={styles.container}>
+        <Text variant="headlineMedium" style={styles.header}>
+          Add New Loan
+        </Text>
+        <TextInput
+          label="Borrower"
+          value={borrower}
+          onChangeText={setBorrower}
+          style={styles.input}
+        />
+        <TextInput
+          label="Amount"
+          value={amount}
+          onChangeText={setAmount}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        <TextInput
+          label="Interest Rate (%)"
+          value={interestRate}
+          onChangeText={setInterestRate}
+          keyboardType="numeric"
+          style={styles.input}
+        />
+        <TextInput
+          label="Due Date (YYYY-MM-DD)"
+          value={dueDate}
+          onChangeText={setDueDate}
+          style={styles.input}
+        />
+        <Button mode="contained" onPress={handleAddLoan} style={styles.button}>
+          Add Loan
+        </Button>
+      </View>
+    </LoanProvider>
   );
 }
 

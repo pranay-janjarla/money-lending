@@ -9,10 +9,13 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.18.2",
     "mongoose": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "babel-preset-expo": "^12.0.9",
+    "nodemon": "^2.0.22",
+    "react-native-dotenv": "^3.4.11"
   }
 }

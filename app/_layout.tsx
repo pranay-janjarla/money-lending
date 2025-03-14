@@ -1,15 +1,21 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { LoanProvider } from './loanContext';
+import { PaperProvider } from 'react-native-paper';
 
-export default function AppNavigator() {
+export default function RootLayout() {
   return (
-    <LoanProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ title: 'Home' }} />
-        <Stack.Screen name="NewLoanScreen" options={{ title: 'New Loan' }} />
-        <Stack.Screen name="loans" options={{ title: 'Loans' }} />
-      </Stack>
-    </LoanProvider>
+    <PaperProvider>
+      <LoanProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+          initialRouteName="(tabs)"
+        >
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </LoanProvider>
+    </PaperProvider>
   );
 }
