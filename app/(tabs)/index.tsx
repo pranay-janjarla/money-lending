@@ -57,17 +57,17 @@ export const useLoanContext = () => {
   return context;
 };
 
-type Summary = {
-  totalGiven: number;
-  totalTaken: number;
-  monthlyEarnings: number;
-  monthlyLoss: number;
-};
-
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+
+  type Summary = {
+    totalGiven: number;
+    totalTaken: number;
+    monthlyEarnings: number;
+    monthlyLoss: number;
+  };
 
   const [summary, setSummary] = useState<Summary>({
     totalGiven: 0,
@@ -77,21 +77,43 @@ export default function HomeScreen() {
   });
 
   useEffect(() => {
-    const fetchSummary = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.loans.summary.get();
-        if (response.ok) {
-          const data = await response.json();
-          setSummary(data);
+        // Fetch total given/taken from the existing summary endpoint
+        const summaryResponse = await api.loans.summary.get();
+        let summaryData = { totalGiven: 0, totalTaken: 0 };
+        if (summaryResponse.ok) {
+          summaryData = await summaryResponse.json();
         } else {
-          console.error('Failed to fetch summary:', await response.text());
+          console.error(
+            'Failed to fetch summary:',
+            await summaryResponse.text()
+          );
         }
+        // Fetch uptrend (monthly income and expense) values
+        const uptrendResponse = await api.loans.uptrend.get();
+        let uptrendData = { monthlyIncome: 0, monthlyExpense: 0 };
+        if (uptrendResponse.ok) {
+          uptrendData = await uptrendResponse.json();
+        } else {
+          console.error(
+            'Failed to fetch uptrend:',
+            await uptrendResponse.text()
+          );
+        }
+        // Update our summary state using the uptrend values
+        setSummary({
+          totalGiven: summaryData.totalGiven,
+          totalTaken: summaryData.totalTaken,
+          monthlyEarnings: uptrendData.monthlyIncome,
+          monthlyLoss: uptrendData.monthlyExpense,
+        });
       } catch (error) {
-        console.error('Error fetching summary:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchSummary();
+    fetchData();
   }, []);
 
   return (

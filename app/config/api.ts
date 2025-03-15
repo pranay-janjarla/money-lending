@@ -14,14 +14,8 @@ export const api = {
     summary: {
       get: () => fetch(`${API_URL}/loans/summary`),
     },
+    uptrend: {
+      get: () => fetch(`${API_URL}/loans/uptrend`),
+    },
   },
-};
-
-export type LoanData = {
-  name: string;
-  amount: number;
-  interest: number;
-  dueDate: string;
-  type: 'given' | 'taken';
-  status?: string;
 };

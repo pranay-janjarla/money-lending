@@ -58,8 +58,8 @@ router.get('/summary', async (req, res) => {
         dueDate.getMonth() === currentMonth &&
         dueDate.getFullYear() === currentYear
       ) {
-        // Calculate interest as (amount * interest / 100)
-        const interestAmount = (loan.amount * loan.interest) / 100;
+        const interestAmount = loan.amount * (loan.interest / 100);
+
         if (loan.borrower === 'me') {
           monthlyLoss += interestAmount;
         } else {

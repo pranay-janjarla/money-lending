@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
 const loanRoutes = require('./routes/loanRoutes');
+const uptrendRoute = require('./routes/uptrendRoute');
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/loans', loanRoutes);
+app.use('/api/loans/uptrend', uptrendRoute);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
